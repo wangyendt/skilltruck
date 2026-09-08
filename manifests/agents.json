@@ -4,7 +4,7 @@
     "repo": "https://github.com/vercel-labs/skills",
     "section": "Supported Agents",
     "license": "MIT",
-    "retrievedAt": "2026-08-19"
+    "retrievedAt": "2026-09-08"
   },
   "agents": [
     {
@@ -104,6 +104,12 @@
       "globalPath": "~/.agents/skills"
     },
     {
+      "id": "sarvam-code",
+      "name": "Sarvam Code",
+      "projectPath": ".agents/skills",
+      "globalPath": "~/.agents/skills"
+    },
+    {
       "id": "warp",
       "name": "Warp",
       "projectPath": ".agents/skills",
@@ -190,7 +196,7 @@
     {
       "id": "droid",
       "name": "Droid",
-      "projectPath": ".factory/skills",
+      "projectPath": ".agents/skills",
       "globalPath": "~/.factory/skills"
     },
     {
@@ -210,6 +216,12 @@
       "name": "ForgeCode",
       "projectPath": ".forge/skills",
       "globalPath": "~/.forge/skills"
+    },
+    {
+      "id": "fx",
+      "name": "fx",
+      "projectPath": ".fx/skills",
+      "globalPath": "~/.fx/skills"
     },
     {
       "id": "gemini-cli",
@@ -268,8 +280,8 @@
     {
       "id": "kilo",
       "name": "Kilo Code",
-      "projectPath": ".kilocode/skills",
-      "globalPath": "~/.kilocode/skills"
+      "projectPath": ".agents/skills",
+      "globalPath": "~/.kilo/skills"
     },
     {
       "id": "kimchi",
