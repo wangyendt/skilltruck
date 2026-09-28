@@ -435,7 +435,7 @@ skilltruck paths
 - 仓库：`vercel-labs/skills`
 - 文档章节：`Supported Agents`
 - 许可证：MIT
-- 访问日期：2026-09-08
+- 访问日期：2026-09-28
 
 维护约定：
 

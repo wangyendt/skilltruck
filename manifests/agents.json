@@ -4,7 +4,7 @@
     "repo": "https://github.com/vercel-labs/skills",
     "section": "Supported Agents",
     "license": "MIT",
-    "retrievedAt": "2026-09-08"
+    "retrievedAt": "2026-09-28"
   },
   "agents": [
     {
@@ -100,6 +100,12 @@
     {
       "id": "loaf",
       "name": "Loaf",
+      "projectPath": ".agents/skills",
+      "globalPath": "~/.agents/skills"
+    },
+    {
+      "id": "pi",
+      "name": "Pi",
       "projectPath": ".agents/skills",
       "globalPath": "~/.agents/skills"
     },
@@ -354,12 +360,6 @@
       "name": "Ona",
       "projectPath": ".ona/skills",
       "globalPath": "~/.ona/skills"
-    },
-    {
-      "id": "pi",
-      "name": "Pi",
-      "projectPath": ".pi/skills",
-      "globalPath": "~/.pi/agent/skills"
     },
     {
       "id": "posit-assistant",
