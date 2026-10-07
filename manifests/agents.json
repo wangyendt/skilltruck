@@ -4,7 +4,7 @@
     "repo": "https://github.com/vercel-labs/skills",
     "section": "Supported Agents",
     "license": "MIT",
-    "retrievedAt": "2026-09-28"
+    "retrievedAt": "2026-10-07"
   },
   "agents": [
     {
@@ -86,6 +86,12 @@
       "globalPath": "~/.agents/skills"
     },
     {
+      "id": "codex",
+      "name": "Codex",
+      "projectPath": ".agents/skills",
+      "globalPath": "~/.agents/skills"
+    },
+    {
       "id": "dexto",
       "name": "Dexto",
       "projectPath": ".agents/skills",
@@ -150,12 +156,6 @@
       "name": "Code Studio",
       "projectPath": ".codestudio/skills",
       "globalPath": "~/.codestudio/skills"
-    },
-    {
-      "id": "codex",
-      "name": "Codex",
-      "projectPath": ".agents/skills",
-      "globalPath": "~/.codex/skills"
     },
     {
       "id": "command-code",
