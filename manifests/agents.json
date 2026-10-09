@@ -4,7 +4,7 @@
     "repo": "https://github.com/vercel-labs/skills",
     "section": "Supported Agents",
     "license": "MIT",
-    "retrievedAt": "2026-10-07"
+    "retrievedAt": "2026-10-09"
   },
   "agents": [
     {
@@ -94,6 +94,12 @@
     {
       "id": "dexto",
       "name": "Dexto",
+      "projectPath": ".agents/skills",
+      "globalPath": "~/.agents/skills"
+    },
+    {
+      "id": "fx",
+      "name": "fx",
       "projectPath": ".agents/skills",
       "globalPath": "~/.agents/skills"
     },
@@ -222,12 +228,6 @@
       "name": "ForgeCode",
       "projectPath": ".forge/skills",
       "globalPath": "~/.forge/skills"
-    },
-    {
-      "id": "fx",
-      "name": "fx",
-      "projectPath": ".fx/skills",
-      "globalPath": "~/.fx/skills"
     },
     {
       "id": "gemini-cli",
