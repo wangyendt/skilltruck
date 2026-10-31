@@ -41,7 +41,7 @@ jobs:
           esac
           echo "mode=${MODE}" >> "${GITHUB_OUTPUT}"
 
-      - name: Sync manifest from upstream README
+      - name: Sync manifest from upstream agents document
         run: |
           mkdir -p .tmp
           if [ "${{ steps.mode.outputs.mode }}" = "notify" ]; then
@@ -129,7 +129,7 @@ jobs:
           title: "chore: sync supported agents manifest"
           body: |
             This PR was generated automatically from the upstream Supported Agents table:
-            - Source: https://github.com/vercel-labs/skills?tab=readme-ov-file#supported-agents
+            - Source: https://github.com/vercel-labs/skills/blob/main/docs/agents.md#supported-agents
             - Added: ${{ steps.summary.outputs.added }}
             - Removed: ${{ steps.summary.outputs.removed }}
             - Updated: ${{ steps.summary.outputs.updated }}
@@ -158,7 +158,7 @@ jobs:
           title: "chore: sync supported agents manifest"
           body: |
             This PR was generated automatically from the upstream Supported Agents table:
-            - Source: https://github.com/vercel-labs/skills?tab=readme-ov-file#supported-agents
+            - Source: https://github.com/vercel-labs/skills/blob/main/docs/agents.md#supported-agents
             - Added: ${{ steps.summary.outputs.added }}
             - Removed: ${{ steps.summary.outputs.removed }}
             - Updated: ${{ steps.summary.outputs.updated }}

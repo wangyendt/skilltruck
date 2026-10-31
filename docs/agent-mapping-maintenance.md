@@ -1,20 +1,22 @@
 # Agent Mapping Maintenance
 
-`manifests/agents.json` is maintained against the Supported Agents table in the `vercel-labs/skills` README.
+`manifests/agents.json` is maintained against the Supported Agents table in `vercel-labs/skills/docs/agents.md` (moved out of the README).
 
 Source of truth:
 
 - Repo: `https://github.com/vercel-labs/skills`
 - Section: `Supported Agents`
-- Direct link: `https://github.com/vercel-labs/skills?tab=readme-ov-file#supported-agents`
+- Direct link: `https://github.com/vercel-labs/skills/blob/main/docs/agents.md#supported-agents`
 
 Update rule:
 
-1. Use the README table above as the only source of truth for agent `name`, `id`, `projectPath`, and `globalPath`.
+1. Use the agents document table above as the only source of truth for agent `name`, `id`, `projectPath`, and `globalPath`.
 2. Expand grouped rows into separate entries in `manifests/agents.json`.
 3. Ignore trailing slash differences such as `.agents/skills` vs `.agents/skills/`; treat them as equivalent.
 4. After updating mappings, also update `source.retrievedAt` in `manifests/agents.json`.
 5. If an upstream agent path changes, prefer matching upstream exactly rather than preserving historical local behavior.
+
+The sync parser uses the upstream `supported-agents:start/end` markers to isolate the generated table, and retains support for legacy README headings. Malformed markers, invalid headers, and unexpectedly large removals fail closed rather than overwriting the manifest.
 
 Current example:
 

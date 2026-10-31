@@ -5,7 +5,7 @@ const path = require('path');
 const { httpFetch } = require('../src/lib/http');
 const { readJson, writeJson } = require('../src/lib/fs');
 
-const DEFAULT_SOURCE_URL = 'https://raw.githubusercontent.com/vercel-labs/skills/main/README.md';
+const DEFAULT_SOURCE_URL = 'https://raw.githubusercontent.com/vercel-labs/skills/main/docs/agents.md';
 const DEFAULT_MANIFEST_PATH = path.resolve(__dirname, '../manifests/agents.json');
 const DEFAULT_SUMMARY_PATH = null;
 const SOURCE_REPO = 'https://github.com/vercel-labs/skills';
@@ -82,7 +82,7 @@ Usage:
 Options:
   --check                 仅检查是否和 upstream 一致；有变化时退出码为 1
   --write                 写回 manifests/agents.json，并同步 README 日期
-  --source-url <url>      指定 upstream README raw URL
+  --source-url <url>      指定 upstream agents 文档 raw URL
   --source-file <path>    使用本地 Markdown 文件作为输入（便于离线测试）
   --manifest <path>       指定 agents manifest 路径
   --summary-json <path>   输出变更摘要 JSON
@@ -133,15 +133,30 @@ function parseMarkdownTableRow(line) {
 }
 
 function extractSupportedAgentsSection(markdown) {
-  const startMatch = /^## Supported Agents\b/m.exec(markdown);
-  if (!startMatch) {
-    throw new Error('未找到 `## Supported Agents` 章节。');
+  // Upstream moved the generated table from README.md to docs/agents.md.
+  // Prefer its explicit boundaries so unrelated compatibility tables are ignored.
+  const startMarker = '<!-- supported-agents:start -->';
+  const endMarker = '<!-- supported-agents:end -->';
+  const start = markdown.indexOf(startMarker);
+  const end = markdown.indexOf(endMarker);
+  if (start !== -1 || end !== -1) {
+    if (start === -1 || end === -1 || end <= start ||
+        markdown.indexOf(startMarker, start + startMarker.length) !== -1 ||
+        markdown.indexOf(endMarker, end + endMarker.length) !== -1) {
+      throw new Error('`Supported Agents` 表格边界标记异常。');
+    }
+    return markdown.slice(start + startMarker.length, end);
   }
 
-  const rest = markdown.slice(startMatch.index);
-  const nextHeadingMatch = /\n##\s+/m.exec(rest.slice(1));
-  if (!nextHeadingMatch) return rest;
-  return rest.slice(0, nextHeadingMatch.index + 1);
+  // Keep --source-file/--source-url compatible with the legacy README format.
+  const startMatch = /^#{1,2} Supported Agents[ \t]*\r?$/im.exec(markdown);
+  if (!startMatch) {
+    throw new Error('未找到 `Supported Agents` 章节。');
+  }
+
+  const rest = markdown.slice(startMatch.index + startMatch[0].length);
+  const nextHeadingMatch = /\n#{1,2}\s+/m.exec(rest);
+  return nextHeadingMatch ? rest.slice(0, nextHeadingMatch.index) : rest;
 }
 
 function parseSupportedAgentsTable(markdown) {
@@ -361,7 +376,7 @@ async function fetchSourceMarkdown({ sourceFile, sourceUrl }) {
     }
   });
   if (!response.ok) {
-    throw new Error(`获取 upstream README 失败：${response.status} ${response.statusText}`);
+    throw new Error(`获取 upstream agents 文档失败：${response.status} ${response.statusText}`);
   }
   return response.text();
 }

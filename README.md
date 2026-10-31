@@ -445,7 +445,7 @@ skilltruck paths
 参考链接：
 
 - https://github.com/vercel-labs/skills
-- https://github.com/vercel-labs/skills?tab=readme-ov-file#supported-agents
+- https://github.com/vercel-labs/skills/blob/main/docs/agents.md#supported-agents
 - https://github.com/vercel-labs/skills/blob/main/LICENSE
 
 ## 发布到 npm（给你未来用）
