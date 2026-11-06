@@ -4,7 +4,7 @@
     "repo": "https://github.com/vercel-labs/skills",
     "section": "Supported Agents",
     "license": "MIT",
-    "retrievedAt": "2026-10-09"
+    "retrievedAt": "2026-11-06"
   },
   "agents": [
     {
@@ -35,13 +35,13 @@
       "id": "antigravity",
       "name": "Antigravity",
       "projectPath": ".agents/skills",
-      "globalPath": "~/.gemini/antigravity/skills"
+      "globalPath": "~/.gemini/config/skills"
     },
     {
       "id": "antigravity-cli",
       "name": "Antigravity CLI",
       "projectPath": ".agents/skills",
-      "globalPath": "~/.gemini/antigravity-cli/skills"
+      "globalPath": "~/.gemini/config/skills"
     },
     {
       "id": "astrbot",
