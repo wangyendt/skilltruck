@@ -10,6 +10,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
+  actions: write
   contents: write
   pull-requests: write
 
@@ -20,8 +21,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_PAT || github.token }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -61,26 +60,23 @@ jobs:
         run: |
           node -e "const fs=require('fs'); const s=JSON.parse(fs.readFileSync('.tmp/agents-sync-summary.json','utf8')); const out=process.env.GITHUB_OUTPUT; fs.appendFileSync(out, 'changed=' + (s.changed ? 'true' : 'false') + '\n'); fs.appendFileSync(out, 'added=' + s.counts.added + '\n'); fs.appendFileSync(out, 'removed=' + s.counts.removed + '\n'); fs.appendFileSync(out, 'updated=' + s.counts.updated + '\n');"
 
-      - name: Resolve PR token
-        id: pr_token
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
+      - name: Keep scheduled workflow active
+        if: steps.summary.outputs.changed != 'true' && github.event_name == 'schedule'
         run: |
-          if [ -n "${GH_PAT}" ]; then
-            echo "use_pat=true" >> "${GITHUB_OUTPUT}"
-          else
-            echo "use_pat=false" >> "${GITHUB_OUTPUT}"
+          LAST_COMMIT_TS="$(git log -1 --format=%ct)"
+          NOW="$(date +%s)"
+          if (( NOW - LAST_COMMIT_TS < 45 * 86400 )); then
+            exit 0
           fi
 
-      - name: Validate direct publish automation prerequisites
-        if: steps.mode.outputs.mode == 'direct' && vars.AUTO_PUBLISH_NPM == 'true'
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-        run: |
-          if [ -z "${GH_PAT}" ]; then
-            echo "AUTO_PUBLISH_NPM=true with direct mode requires GH_PAT so the sync push can trigger publish-npm.yml."
+          if ! git diff --cached --quiet; then
+            echo "Refusing to create a keepalive commit with staged changes."
             exit 1
           fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit --allow-empty -m "chore: keep scheduled workflow active [skip ci]"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
 
       - name: Cache summary payload
         id: summary_payload
@@ -108,44 +104,21 @@ jobs:
           fi
           git commit -m "chore: sync supported agents manifest"
           COMMIT_SHA="$(git rev-parse HEAD)"
-          git push origin "HEAD:${{ github.ref_name }}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
           echo "commit_sha=${COMMIT_SHA}" >> "${GITHUB_OUTPUT}"
           echo "commit_url=${{ github.server_url }}/${{ github.repository }}/commit/${COMMIT_SHA}" >> "${GITHUB_OUTPUT}"
 
+      - name: Dispatch npm publish
+        if: steps.direct_push.outputs.commit_sha != '' && vars.AUTO_PUBLISH_NPM == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run publish-npm.yml --ref "${GITHUB_REF_NAME}"
+
       - name: Create pull request
-        if: steps.summary.outputs.changed == 'true' && steps.mode.outputs.mode == 'pr' && steps.pr_token.outputs.use_pat != 'true'
+        if: steps.summary.outputs.changed == 'true' && steps.mode.outputs.mode == 'pr'
         id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
-          commit-message: "chore: sync supported agents manifest"
-          branch: "automation/supported-agents-sync"
-          delete-branch: true
-          add-paths: |
-            manifests/agents.json
-            README.md
-            README_EN.md
-            package.json
-            package-lock.json
-          title: "chore: sync supported agents manifest"
-          body: |
-            This PR was generated automatically from the upstream Supported Agents table:
-            - Source: https://github.com/vercel-labs/skills/blob/main/docs/agents.md#supported-agents
-            - Added: ${{ steps.summary.outputs.added }}
-            - Removed: ${{ steps.summary.outputs.removed }}
-            - Updated: ${{ steps.summary.outputs.updated }}
-
-            The workflow updated `manifests/agents.json` and refreshed README retrieval dates.
-            If `AUTO_BUMP_NPM_VERSION=true`, the package version was also patch-bumped in this branch.
-          labels: |
-            automation
-            agents-sync
-
-      - name: Create pull request with PAT
-        if: steps.summary.outputs.changed == 'true' && steps.mode.outputs.mode == 'pr' && steps.pr_token.outputs.use_pat == 'true'
-        id: cpr_pat
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GH_PAT }}
           commit-message: "chore: sync supported agents manifest"
           branch: "automation/supported-agents-sync"
           delete-branch: true
@@ -197,7 +170,7 @@ jobs:
             --summary-json .tmp/agents-sync-summary.json \
             --repo "${{ github.repository }}" \
             --mode "${{ steps.mode.outputs.mode }}" \
-            --pr-url "${{ steps.cpr.outputs.pull-request-url || steps.cpr_pat.outputs.pull-request-url }}" \
+            --pr-url "${{ steps.cpr.outputs.pull-request-url }}" \
             --commit-url "${{ steps.direct_push.outputs.commit_url }}" \
             --run-url "${GITHUB_RUN_URL}" \
             --title "skilltruck upstream agent sync"
